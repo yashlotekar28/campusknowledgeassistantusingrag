@@ -1,6 +1,70 @@
 let currentScope = "all";
 let isSending = false;
 
+// Check API key status on page load
+window.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const res = await fetch("/api/stats");
+    const data = await res.json();
+    const banner = document.getElementById("key-warning-banner");
+    if (banner) {
+      if (data.has_api_key) {
+        banner.classList.add("hidden");
+      } else {
+        banner.classList.remove("hidden");
+      }
+    }
+  } catch (e) {}
+});
+
+function openSettingsModal() {
+  const modal = document.getElementById("settings-modal");
+  if (modal) modal.classList.remove("hidden");
+}
+
+function closeSettingsModal() {
+  const modal = document.getElementById("settings-modal");
+  if (modal) modal.classList.add("hidden");
+}
+
+async function saveApiKey() {
+  const input = document.getElementById("api-key-input");
+  const key = input.value.trim();
+  const status = document.getElementById("modal-status");
+
+  if (!key) {
+    status.className = "text-xs text-red-500 font-medium block";
+    status.textContent = "Please enter a valid API key.";
+    return;
+  }
+
+  status.className = "text-xs text-blue-600 font-medium block";
+  status.textContent = "Saving and validating API key...";
+
+  try {
+    const res = await fetch("/api/settings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ gemini_api_key: key }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      status.className = "text-xs text-emerald-600 font-medium block";
+      status.textContent = "✓ Key saved successfully! Gemini answers are now active.";
+      const banner = document.getElementById("key-warning-banner");
+      if (banner) banner.classList.add("hidden");
+      setTimeout(() => closeSettingsModal(), 1500);
+    } else {
+      status.className = "text-xs text-red-500 font-medium block";
+      status.textContent = `✗ Error: ${data.detail || "Failed to save key."}`;
+    }
+  } catch (err) {
+    status.className = "text-xs text-red-500 font-medium block";
+    status.textContent = "✗ Network error connecting to server.";
+  }
+}
+
 function setScope(scope) {
   currentScope = scope;
   document.querySelectorAll(".scope-btn").forEach((btn) => {
