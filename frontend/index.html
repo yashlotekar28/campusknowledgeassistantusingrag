@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIT AOE Campus Knowledge Assistant</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Phosphor Icons CDN -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#f0f4f9] text-slate-800 font-sans h-screen flex flex-col overflow-hidden">
+
+  <!-- Top Navigation Bar -->
+  <header class="h-14 bg-white border-b border-slate-200 px-6 flex items-center justify-between shrink-0 shadow-sm z-20">
+    <div class="flex items-center space-x-3">
+      <div class="bg-blue-900 text-white p-2 rounded-lg flex items-center justify-center">
+        <i class="ph-bold ph-bank text-xl"></i>
+      </div>
+      <div>
+        <h1 class="font-bold text-lg text-blue-950 leading-none">MIT AOE</h1>
+        <p class="text-xs text-slate-500 font-medium">Campus Knowledge Assistant</p>
+      </div>
+      <span class="text-xs bg-blue-50 text-blue-700 font-semibold px-2.5 py-0.5 rounded-full border border-blue-200 ml-2">
+        Ask. Explore. Discover.
+      </span>
+    </div>
+
+    <!-- Scope Filter & Top Actions -->
+    <div class="flex items-center space-x-4">
+      <div class="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-semibold">
+        <button id="scope-all" onclick="setScope('all')" class="scope-btn px-3 py-1 rounded-md bg-white text-blue-900 shadow-sm transition">All Sources</button>
+        <button id="scope-official" onclick="setScope('official')" class="scope-btn px-3 py-1 rounded-md text-slate-600 hover:text-slate-900 transition">Official Docs</button>
+        <button id="scope-personal" onclick="setScope('personal')" class="scope-btn px-3 py-1 rounded-md text-slate-600 hover:text-slate-900 transition">My Uploads</button>
+      </div>
+
+      <div class="flex items-center space-x-2 text-slate-600 text-sm">
+        <button class="p-2 hover:bg-slate-100 rounded-lg transition" title="Help"><i class="ph ph-question text-lg"></i></button>
+        <div class="w-8 h-8 rounded-full bg-blue-900 text-white flex items-center justify-center font-bold text-xs ring-2 ring-blue-100">
+          SS
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 3-Column Dashboard Body -->
+  <div class="flex flex-1 overflow-hidden">
+
+    <!-- LEFT SIDEBAR: Navigation (Dark Navy) -->
+    <aside class="w-64 bg-[#0f172a] text-slate-300 flex flex-col justify-between shrink-0 p-4 border-r border-slate-800">
+      <div class="space-y-6">
+        <nav class="space-y-1">
+          <button onclick="switchTab('chat')" id="nav-chat" class="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl font-medium text-sm bg-blue-600 text-white shadow-md transition">
+            <i class="ph-bold ph-chat-circle-dots text-lg"></i>
+            <span>Chat</span>
+          </button>
+          <button onclick="switchTab('my-docs')" id="nav-my-docs" class="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl font-medium text-sm hover:bg-slate-800/80 hover:text-white transition">
+            <i class="ph-bold ph-folder-user text-lg"></i>
+            <span>My Documents</span>
+          </button>
+          <button onclick="switchTab('official-docs')" id="nav-official-docs" class="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl font-medium text-sm hover:bg-slate-800/80 hover:text-white transition">
+            <i class="ph-bold ph-shield-check text-lg"></i>
+            <span>Official Documents</span>
+          </button>
+          <button onclick="switchTab('history')" id="nav-history" class="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl font-medium text-sm hover:bg-slate-800/80 hover:text-white transition">
+            <i class="ph-bold ph-clock-counter-clockwise text-lg"></i>
+            <span>History</span>
+          </button>
+          <button onclick="switchTab('settings')" id="nav-settings" class="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl font-medium text-sm hover:bg-slate-800/80 hover:text-white transition">
+            <i class="ph-bold ph-gear text-lg"></i>
+            <span>Settings</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Left Sidebar Footer: Campus Branding -->
+      <div class="bg-slate-900/90 rounded-2xl p-4 border border-slate-800/80 text-center relative overflow-hidden">
+        <div class="flex justify-center mb-2 text-blue-400">
+          <i class="ph-fill ph-graduation-cap text-3xl"></i>
+        </div>
+        <h4 class="font-bold text-white text-sm">MIT AOE</h4>
+        <p class="text-xs text-slate-400 mt-0.5 italic">Knowledge for a Brighter Tomorrow</p>
+      </div>
+    </aside>
+
+    <!-- CENTER COLUMN: Interactive Chat Area -->
+    <main class="flex-1 flex flex-col bg-white overflow-hidden relative">
+      
+      <!-- Chat Messages Scroll Container -->
+      <div id="chat-container" class="flex-1 overflow-y-auto p-6 space-y-6">
+
+        <!-- Hero Welcome Banner -->
+        <div id="welcome-banner" class="bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-950 text-white rounded-3xl p-6 shadow-md relative overflow-hidden border border-blue-800">
+          <div class="relative z-10 max-w-xl">
+            <span class="inline-block bg-blue-500/20 text-blue-200 text-xs font-semibold px-3 py-1 rounded-full border border-blue-400/30 mb-3">
+              Official Knowledge Portal
+            </span>
+            <h2 class="text-2xl font-bold tracking-tight">Welcome to MIT AOE</h2>
+            <h3 class="text-lg font-semibold text-blue-200 mb-2">Campus Knowledge Assistant</h3>
+            <p class="text-xs text-slate-200 leading-relaxed">
+              Get verified, accurate answers from official institutional documents and your own uploads, with source references and exact page numbers.
+            </p>
+          </div>
+          <div class="absolute right-4 top-2 bottom-2 w-48 opacity-15 flex items-center justify-center pointer-events-none">
+            <i class="ph-bold ph-bank text-9xl"></i>
+          </div>
+        </div>
+
+        <!-- Chat Feed populated dynamically -->
+        <div id="messages-list" class="space-y-6"></div>
+
+      </div>
+
+      <!-- Bottom Chat Input Bar -->
+      <div class="p-4 bg-white border-t border-slate-200">
+        <div class="max-w-4xl mx-auto">
+          <form id="chat-form" onsubmit="handleSend(event)" class="relative flex items-center">
+            <div class="absolute left-4 text-slate-400">
+              <i class="ph-bold ph-sparkle text-lg text-blue-600"></i>
+            </div>
+            <input 
+              type="text" 
+              id="query-input" 
+              placeholder="Ask anything about MIT AOE (admissions, hostel, fees, syllabus, exams)..." 
+              class="w-full bg-slate-50 border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 rounded-2xl py-3.5 pl-11 pr-24 text-sm text-slate-800 placeholder-slate-400 transition"
+              autocomplete="off"
+            />
+            <div class="absolute right-2 flex items-center space-x-1.5">
+              <button type="button" class="p-2 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-200 transition" title="Voice Input">
+                <i class="ph-bold ph-microphone text-lg"></i>
+              </button>
+              <button type="submit" id="send-btn" class="bg-blue-600 hover:bg-blue-700 text-white p-2.5 rounded-xl shadow-sm transition flex items-center justify-center">
+                <i class="ph-bold ph-paper-plane-right text-base"></i>
+              </button>
+            </div>
+          </form>
+          <div class="flex items-center justify-between text-[11px] text-slate-400 mt-2 px-2">
+            <span>Current Scope: <strong id="scope-indicator" class="text-blue-900 uppercase">ALL SOURCES</strong></span>
+            <span>Grounding: 70% Semantic + 30% Keyword Hybrid Retrieval</span>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- RIGHT SIDEBAR: Key Features, Document Upload & Example Questions -->
+    <aside class="w-80 bg-slate-50 border-l border-slate-200 p-4 overflow-y-auto space-y-4 shrink-0">
+
+      <!-- Card 1: Key Features -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+        <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center space-x-2">
+          <i class="ph-bold ph-lightning text-amber-500 text-sm"></i>
+          <span>Key Features</span>
+        </h4>
+        <div class="space-y-2.5 text-xs">
+          <div class="flex items-start space-x-2.5">
+            <div class="p-1.5 bg-blue-50 text-blue-600 rounded-lg mt-0.5"><i class="ph-bold ph-brain"></i></div>
+            <div>
+              <strong class="text-slate-800">Ask Questions</strong>
+              <p class="text-slate-500 text-[11px]">Get accurate answers from institutional documents using AI</p>
+            </div>
+          </div>
+          <div class="flex items-start space-x-2.5">
+            <div class="p-1.5 bg-emerald-50 text-emerald-600 rounded-lg mt-0.5"><i class="ph-bold ph-files"></i></div>
+            <div>
+              <strong class="text-slate-800">Multiple Formats</strong>
+              <p class="text-slate-500 text-[11px]">PDFs, Word files, scanned docs & screenshots</p>
+            </div>
+          </div>
+          <div class="flex items-start space-x-2.5">
+            <div class="p-1.5 bg-purple-50 text-purple-600 rounded-lg mt-0.5"><i class="ph-bold ph-bookmarks"></i></div>
+            <div>
+              <strong class="text-slate-800">Source References</strong>
+              <p class="text-slate-500 text-[11px]">Exact page numbers & citations for verification</p>
+            </div>
+          </div>
+          <div class="flex items-start space-x-2.5">
+            <div class="p-1.5 bg-amber-50 text-amber-600 rounded-lg mt-0.5"><i class="ph-bold ph-user-circle"></i></div>
+            <div>
+              <strong class="text-slate-800">Official & Personal</strong>
+              <p class="text-slate-500 text-[11px]">Query campus documents or your personal uploads</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Upload Your Document -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+        <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2 flex items-center space-x-2">
+          <i class="ph-bold ph-cloud-arrow-up text-blue-600 text-sm"></i>
+          <span>Upload Document</span>
+        </h4>
+        <p class="text-[11px] text-slate-500 mb-3">Upload PDFs, Word docs, or images to query your own documents.</p>
+
+        <div 
+          id="drop-zone"
+          onclick="document.getElementById('file-input').click()"
+          class="border-2 border-dashed border-slate-300 hover:border-blue-500 bg-slate-50 hover:bg-blue-50/50 rounded-xl p-4 text-center cursor-pointer transition"
+        >
+          <input type="file" id="file-input" class="hidden" accept=".pdf,.docx,.doc,.png,.jpg,.jpeg" onchange="uploadFile(this.files[0])" />
+          <i class="ph-bold ph-upload-simple text-2xl text-blue-600 mb-1"></i>
+          <p class="text-xs font-semibold text-slate-700">Drag & drop or click to upload</p>
+          <p class="text-[10px] text-slate-400 mt-0.5">Supports PDF, DOCX, PNG, JPG (Max 25MB)</p>
+        </div>
+
+        <div id="upload-status" class="mt-2 text-[11px] hidden"></div>
+      </div>
+
+      <!-- Card 3: Example Questions -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+        <div class="flex items-center justify-between mb-2">
+          <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+            <i class="ph-bold ph-lightbulb text-amber-500 text-sm"></i>
+            <span>Example Questions</span>
+          </h4>
+          <button onclick="refreshExamples()" class="text-slate-400 hover:text-slate-600 text-xs" title="Refresh">
+            <i class="ph ph-arrows-clockwise"></i>
+          </button>
+        </div>
+
+        <div id="example-list" class="space-y-2">
+          <button onclick="askExample('What is the admission process for B.Tech at MIT AOE?')" class="w-full text-left p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-900 text-xs text-slate-700 transition border border-slate-100 flex items-center justify-between group">
+            <span>What is the admission process for B.Tech?</span>
+            <i class="ph-bold ph-arrow-right text-slate-300 group-hover:text-blue-600 text-xs"></i>
+          </button>
+          <button onclick="askExample('Can you show me the hostel fee structure?')" class="w-full text-left p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-900 text-xs text-slate-700 transition border border-slate-100 flex items-center justify-between group">
+            <span>Show me the hostel fee structure</span>
+            <i class="ph-bold ph-arrow-right text-slate-300 group-hover:text-blue-600 text-xs"></i>
+          </button>
+          <button onclick="askExample('What are the academic departments at MIT AOE?')" class="w-full text-left p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-900 text-xs text-slate-700 transition border border-slate-100 flex items-center justify-between group">
+            <span>What are the academic departments?</span>
+            <i class="ph-bold ph-arrow-right text-slate-300 group-hover:text-blue-600 text-xs"></i>
+          </button>
+          <button onclick="askExample('What are the exam regulations and passing criteria?')" class="w-full text-left p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-900 text-xs text-slate-700 transition border border-slate-100 flex items-center justify-between group">
+            <span>What are the exam regulations?</span>
+            <i class="ph-bold ph-arrow-right text-slate-300 group-hover:text-blue-600 text-xs"></i>
+          </button>
+          <button onclick="askExample('Tell me about the placement statistics and top recruiters.')" class="w-full text-left p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-900 text-xs text-slate-700 transition border border-slate-100 flex items-center justify-between group">
+            <span>Placement statistics & top recruiters</span>
+            <i class="ph-bold ph-arrow-right text-slate-300 group-hover:text-blue-600 text-xs"></i>
+          </button>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

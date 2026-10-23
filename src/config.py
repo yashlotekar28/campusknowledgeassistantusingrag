@@ -38,5 +38,9 @@ class Config:
     keyword_weight: float = float(os.getenv("HYBRID_KEYWORD_WEIGHT", 0.3))
     default_top_k: int = int(os.getenv("DEFAULT_TOP_K", 3))
 
+    # Server Settings
+    server_host: str = os.getenv("SERVER_HOST", "127.0.0.1")
+    server_port: int = int(os.getenv("SERVER_PORT", 8000))
+
 
 config = Config()

@@ -1,4 +1,4 @@
-"""Persistent ChromaDB vector database with document versioning & deduplication."""
+"""Persistent ChromaDB vector database with document scoping, versioning & deduplication."""
 
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -57,7 +57,6 @@ class CampusVectorDB:
         if not chunks:
             return 0
 
-        # Remove previous revisions of this document
         filename = chunks[0].source
         fingerprint = chunks[0].document_fingerprint
         self.remove_old_document_versions(filename, fingerprint)
@@ -77,12 +76,44 @@ class CampusVectorDB:
                     "page_number": c.page_number,
                     "chunk_id": c.chunk_id,
                     "document_fingerprint": c.document_fingerprint,
+                    "doc_scope": c.doc_scope,
                 }
                 for c in chunks
             ],
         )
 
         return len(chunks)
+
+    def list_documents(self) -> List[Dict[str, Any]]:
+        """List summary of indexed documents with scope and chunk counts."""
+        data = self.collection.get(include=["metadatas"])
+        docs_map: Dict[str, Dict[str, Any]] = {}
+
+        if data and "metadatas" in data and data["metadatas"]:
+            for meta in data["metadatas"]:
+                source = meta.get("source", "Unknown")
+                scope = meta.get("doc_scope", "official")
+                page = meta.get("page_number", 1)
+
+                if source not in docs_map:
+                    docs_map[source] = {
+                        "source": source,
+                        "doc_scope": scope,
+                        "pages": set(),
+                        "chunks": 0,
+                    }
+                docs_map[source]["pages"].add(page)
+                docs_map[source]["chunks"] += 1
+
+        summary = []
+        for item in docs_map.values():
+            summary.append({
+                "source": item["source"],
+                "doc_scope": item["doc_scope"],
+                "total_pages": len(item["pages"]),
+                "total_chunks": item["chunks"],
+            })
+        return summary
 
     def count(self) -> int:
         """Total chunks in collection."""

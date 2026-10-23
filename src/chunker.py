@@ -1,4 +1,4 @@
-"""Structure-aware chunking preserving paragraphs, sentences, and metadata."""
+"""Structure-aware chunking preserving paragraphs, sentences, and document scopes."""
 
 import hashlib
 import re
@@ -17,6 +17,7 @@ class DocumentChunk:
     page_number: int
     document_fingerprint: str
     chunk_id: str
+    doc_scope: str = "official"  # "official" or "personal"
 
 
 class StructureAwareChunker:
@@ -81,7 +82,7 @@ class StructureAwareChunker:
         pages: List[ExtractedPage],
         document_fingerprint: str,
     ) -> List[DocumentChunk]:
-        """Generate deduplicated chunks with unique hash identifiers."""
+        """Generate deduplicated chunks with unique hash identifiers and scope tags."""
         unique_chunks: List[DocumentChunk] = []
         seen_chunk_hashes: Set[str] = set()
 
@@ -89,7 +90,6 @@ class StructureAwareChunker:
             raw_chunks = self.split_into_chunks(page.text)
 
             for chunk_index, chunk_text in enumerate(raw_chunks, start=1):
-                # Hash based on document fingerprint, page, and text content
                 chunk_hash = hashlib.sha256(
                     (
                         document_fingerprint
@@ -111,6 +111,7 @@ class StructureAwareChunker:
                         page_number=page.page_number,
                         document_fingerprint=document_fingerprint,
                         chunk_id=chunk_hash,
+                        doc_scope=page.doc_scope,
                     )
                 )
 
