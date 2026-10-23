@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Vector database local data
+data/chroma_db/
+*.db
+
+# Temporary OCR and cache files
+data/tmp/
+/tmp/
+
+# Secrets and environment configs
+.env
+.env.local
+
+# IDEs & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
